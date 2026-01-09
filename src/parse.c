@@ -8,8 +8,10 @@
 
 int output_file(
     int fd,
-    struct dbheader_t* dbheader
+    struct dbheader_t* dbheader,
+    struct employee_t* employee
 ) {
+    employee = NULL;
     dbheader->magic = htonl(dbheader->magic);
     dbheader->version = htons(dbheader->version);
     dbheader->count = htons(dbheader->count);

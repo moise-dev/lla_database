@@ -61,7 +61,8 @@ int main(
             return STATUS_ERROR;
         }
 
-        output_file(fd, headerOut);
+        struct employee_t* employee = NULL;
+        output_file(fd, headerOut, employee);
 
         close(fd);
 
