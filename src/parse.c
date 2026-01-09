@@ -94,6 +94,5 @@ int validate_db_header(
     }
 
     *headerOut = header;
-    free(header);
     return STATUS_SUCCESS;
 }
