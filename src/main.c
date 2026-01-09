@@ -80,7 +80,5 @@ int main(
         close(fd);
     }
 
-    printf("New file: %d\n", new_file);
-    printf("Filename: %s\n", filepath);
     return 0;
 }
