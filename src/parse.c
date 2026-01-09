@@ -24,7 +24,6 @@ int output_file(
 }
 
 int create_db_header(
-    int fd,
     struct dbheader_t** headerOut
 ) {
     struct dbheader_t* header = calloc(1, sizeof(struct dbheader_t));

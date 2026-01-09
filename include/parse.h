@@ -15,7 +15,7 @@ struct employee_t {
     unsigned int hours;
 };
 
-int create_db_header(int fd, struct dbheader_t** headerOut);
+int create_db_header(struct dbheader_t** headerOut);
 int validate_db_header(int fd, struct dbheader_t** headerOut);
 int read_employees(
     int fd,

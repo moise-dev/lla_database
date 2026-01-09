@@ -56,7 +56,7 @@ int main(
             return STATUS_ERROR;
         }
         printf("Created new file with fd %d.\n", fd);
-        if (create_db_header(fd, &headerOut) == STATUS_ERROR) {
+        if (create_db_header(&headerOut) == STATUS_ERROR) {
             printf("[x] Unable to create db header.\n");
             return STATUS_ERROR;
         }
