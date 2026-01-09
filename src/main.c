@@ -4,6 +4,7 @@
 
 #include "common.h"
 #include "file.h"
+#include "parse.h"
 
 void print_usage(char *argv[]) {
   printf("Usage:\n\t%s\n", argv[0]);
@@ -12,9 +13,12 @@ void print_usage(char *argv[]) {
 }
 
 int main(int argc, char *argv[]) {
+
   int c;
   bool new_file = false;
   char *filepath = NULL;
+  struct dbheader_t *headerOut = NULL;
+  
 
   if (argc < 2) {
     print_usage(argv);
@@ -49,14 +53,26 @@ int main(int argc, char *argv[]) {
       return STATUS_ERROR;
     }
     printf("Created new file with fd %d.\n", fd);
+    if (create_db_header(fd, &headerOut) == STATUS_ERROR) {
+      printf("[x] Unable to create db header.\n");
+      return STATUS_ERROR;
+    }
+    
+    output_file(fd, headerOut);
+    
     close(fd);
+
   } else {
     int fd = open_db_file(filepath);
     if (fd == STATUS_ERROR) {
-      printf("Unable to open db file.\n");
+      printf("[x] Unable to open db file.\n");
       return STATUS_ERROR;
     }
     printf("Opened new file with fd %d.\n", fd);
+    if (validate_db_header(fd, &headerOut) == STATUS_ERROR) {
+      printf("[x] Unable to validate db header.\n");
+      return STATUS_ERROR;
+    }
     close(fd);
   }
 
