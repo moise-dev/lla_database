@@ -7,9 +7,11 @@
 #include "file.h"
 #include "common.h"
 
-#define PERMS_644  S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH
+#define PERMS_644 S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH
 
-int create_db_file(char *filename) {
+int create_db_file(
+    char* filename
+) {
     int fd = -1;
     if ((fd = open(filename, O_RDONLY)) != -1) {
         printf("File already exists\n");
@@ -25,12 +27,14 @@ int create_db_file(char *filename) {
     return fd;
 }
 
-int open_db_file(char *filename) {
+int open_db_file(
+    char* filename
+) {
     int fd = open(filename, O_RDONLY, PERMS_644);
     if (fd == -1) {
         perror("open");
         return STATUS_ERROR;
     }
-         
+
     return fd;
 }
