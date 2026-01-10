@@ -14,7 +14,7 @@ int create_db_file(
 ) {
     int fd = -1;
     if ((fd = open(filename, O_RDONLY)) != -1) {
-        printf("File already exists\n");
+        printf("[x] File already exists\n");
         close(fd);
         return STATUS_ERROR;
     }

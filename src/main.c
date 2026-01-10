@@ -90,20 +90,23 @@ int main(
 
     if (addstring) {
         headerOut->count++;
+        if (read_employees(fd, headerOut, &employees) == STATUS_ERROR) {
+            printf("[x] Error in reading employees.\n");
+            return STATUS_ERROR;
+        }
+ 
         employees = realloc(employees, headerOut->count);
         if (employees == NULL) {
             perror("realloc");
             return STATUS_ERROR;
         }
+
         if (add_employee(headerOut, employees, addstring) == STATUS_ERROR) {
             printf("[x] Error adding employee.\n");
             return STATUS_ERROR;
         }
-
-        if (write(fd, employees, sizeof(employees)) == STATUS_ERROR) {
-            perror("write");
-            return STATUS_ERROR;
-        }
+       
+        output_file(fd, headerOut, employees);
     }
 
     if (readdb) {
@@ -112,13 +115,15 @@ int main(
             return STATUS_ERROR;
         }
         printf("\nList of employees:\n");
-        for (int i = 0; i< headerOut->count; i++){
-           printf("\tName: %s, Address: %s, Hours: %d", employees[i].name, employees[i].address, employees[i].hours);
-        } 
-
+        for (int i = 0; i < headerOut->count; i++) {
+            printf(
+                "\tName: %s, Address: %s, Hours: %d\n",
+                employees[i].name,
+                employees[i].address,
+                employees[i].hours
+            );
+        }
     }
-
-
 
     close(fd);
 

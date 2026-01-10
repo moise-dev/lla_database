@@ -12,16 +12,15 @@ int add_employee(
     struct employee_t* employees,
     char* addstring
 ) {
-    int i = dbhdr->count-1;
+    int i = dbhdr->count - 1;
     char* name = strtok(addstring, ",");
     char* address = strtok(NULL, ",");
     char* hours = strtok(NULL, ",");
 
     strncpy(employees[i].name, name, strlen(name));
     strncpy(employees[i].address, address, strlen(address));
-    
-    employees[i].hours = atoi(hours);
 
+    employees[i].hours = atoi(hours);
 
     return STATUS_SUCCESS;
 }
@@ -32,7 +31,7 @@ int read_employees(
     struct employee_t** employeesOut
 ) {
 
-    unsigned short count = dbheadr->count;
+    int count = dbheadr->count;
     struct employee_t* employees = calloc(count, sizeof(struct employee_t));
     if (employees == NULL) {
         perror("calloc");
@@ -42,7 +41,7 @@ int read_employees(
     read(fd, employees, count * sizeof(struct employee_t));
 
     for (int i = 0; i < count; i++) {
-        employees[i].hours = ntohs(employees[i].hours);
+        employees[i].hours = ntohl(employees[i].hours);
     }
 
     *employeesOut = employees;
@@ -54,16 +53,32 @@ int output_file(
     struct dbheader_t* dbheader,
     struct employee_t* employee
 ) {
-    employee = NULL;
+    int realcount = dbheader->count;
     dbheader->magic = htonl(dbheader->magic);
+    dbheader->filesize = htonl(
+        sizeof(struct dbheader_t) + realcount * sizeof(struct employee_t)
+    );
     dbheader->version = htons(dbheader->version);
     dbheader->count = htons(dbheader->count);
-    dbheader->filesize = htonl(dbheader->filesize);
+
+    lseek(fd, 0, SEEK_SET);
 
     if (write(fd, dbheader, sizeof(struct dbheader_t)) <= 0) {
+        printf("[x] Error writing headers.\n");
         perror("write");
         close(fd);
         return STATUS_ERROR;
+    }
+
+    for (int i = 0; i < realcount; i++) {
+        employee[i].hours = htonl(employee[i].hours);
+        if (write(fd, &employee[i], sizeof(struct employee_t)) ==
+            STATUS_ERROR) {
+            printf("[x] Error writing employee.\n");
+            perror("write");
+            close(fd);
+            return STATUS_ERROR;
+        }
     }
     return STATUS_SUCCESS;
 }

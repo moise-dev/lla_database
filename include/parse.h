@@ -24,6 +24,10 @@ int read_employees(
     struct dbheader_t* dbhdr,
     struct employee_t** employeesOut
 );
-int add_employee(struct dbheader_t* dbhdr, struct employee_t* employee, char *addstring);
+int add_employee(
+    struct dbheader_t* dbhdr,
+    struct employee_t* employee,
+    char* addstring
+);
 int output_file(int fd, struct dbheader_t*, struct employee_t* employees);
 #endif
