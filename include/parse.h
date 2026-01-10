@@ -24,11 +24,7 @@ int read_employees(
     struct dbheader_t* dbhdr,
     struct employee_t** employeesOut
 );
-void list_employees(
-    int fd,
-    struct dbheader_t* dbhdr,
-    struct employee_t* employeesOut
-);
+void list_employees(struct dbheader_t* dbhdr, struct employee_t* employeesOut);
 
 int add_employee(
     struct dbheader_t* dbhdr,

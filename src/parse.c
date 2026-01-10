@@ -8,7 +8,6 @@
 #include <string.h>
 
 void list_employees(
-    int fd,
     struct dbheader_t* headerOut,
     struct employee_t* employees
 ) {
