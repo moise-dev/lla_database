@@ -8,6 +8,8 @@ run: clean default
 	./$(TARGET) -f ./mynewdb.db -a "aldo,baglio,102"
 	./$(TARGET) -f ./mynewdb.db -a "ayeye,brazorf,65"
 	./$(TARGET) -f ./mynewdb.db -l
+	./$(TARGET) -f ./mynewdb.db -a "asdf,asdf,2" -l
+
 
 default: $(TARGET)
 

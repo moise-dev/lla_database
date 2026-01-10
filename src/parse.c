@@ -12,10 +12,6 @@ void list_employees(
     struct dbheader_t* headerOut,
     struct employee_t* employees
 ) {
-    if (read_employees(fd, headerOut, &employees) == STATUS_ERROR) {
-        printf("[x] Error in reading employees.\n");
-        return;
-    }
     printf("\nList of employees:\n");
     for (int i = 0; i < headerOut->count; i++) {
         printf(

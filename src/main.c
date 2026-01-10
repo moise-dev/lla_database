@@ -63,7 +63,7 @@ int main(
         return STATUS_ERROR;
     }
 
-    if (new_file == true) {
+    if (new_file) {
         fd = create_db_file(filepath);
         if (fd == STATUS_ERROR) {
             printf("[x] Unable to create db file.\n");
@@ -73,8 +73,6 @@ int main(
             printf("[x] Unable to create db header.\n");
             return STATUS_ERROR;
         }
-
-        output_file(fd, headerOut, employees);
 
     } else {
         fd = open_db_file(filepath);
@@ -88,25 +86,23 @@ int main(
         }
     }
 
-    if (addstring) {
-        if (read_employees(fd, headerOut, &employees) == STATUS_ERROR) {
-            printf("[x] Error in reading employees.\n");
-            return STATUS_ERROR;
-        }
+    if (read_employees(fd, headerOut, &employees) == STATUS_ERROR) {
+        printf("Failed to read employees");
+        return STATUS_ERROR;
+    }
 
+    if (addstring) {
         if (add_employee(headerOut, &employees, addstring) == STATUS_ERROR) {
             printf("[x] Error adding employee.\n");
             return STATUS_ERROR;
         }
-
-        output_file(fd, headerOut, employees);
     }
 
     if (listdb) {
         list_employees(fd, headerOut, employees);
     }
 
-    close(fd);
+    output_file(fd, headerOut, employees);
 
     return STATUS_SUCCESS;
 }
