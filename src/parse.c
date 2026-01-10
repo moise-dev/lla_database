@@ -9,19 +9,47 @@
 
 int add_employee(
     struct dbheader_t* dbhdr,
-    struct employee_t* employees,
+    struct employee_t** employees,
     char* addstring
 ) {
-    int i = dbhdr->count - 1;
+    if (dbhdr == NULL || employees == NULL || addstring == NULL) {
+        printf("[x] One of the input args is empty\n");
+        return STATUS_ERROR;
+    }
     char* name = strtok(addstring, ",");
+    if (name == NULL) {
+        printf("[x] Failed to extract name\n");
+        return STATUS_ERROR;
+    }
     char* address = strtok(NULL, ",");
+    if (name == NULL) {
+        printf("[x] Failed to extract address\n");
+        return STATUS_ERROR;
+    }
+
     char* hours = strtok(NULL, ",");
+    if (name == NULL) {
+        printf("[x] Failed to extract hours\n");
+        return STATUS_ERROR;
+    }
 
-    strncpy(employees[i].name, name, strlen(name));
-    strncpy(employees[i].address, address, strlen(address));
 
-    employees[i].hours = atoi(hours);
 
+    struct employee_t *e = *employees;
+    e = realloc(e, sizeof(struct employee_t) * dbhdr->count+1);
+    if (e == NULL) {
+        perror("realloc");
+        return STATUS_ERROR;
+    }
+
+    dbhdr->count++;
+    int i = dbhdr->count - 1;
+    strncpy(e[i].name, name, sizeof(e[i].name)-1);
+    strncpy(e[i].address, address, sizeof(e[i].address)-1);
+
+    e[i].hours = atoi(hours);
+
+    *employees = e;
     return STATUS_SUCCESS;
 }
 

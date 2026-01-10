@@ -89,19 +89,12 @@ int main(
     }
 
     if (addstring) {
-        headerOut->count++;
         if (read_employees(fd, headerOut, &employees) == STATUS_ERROR) {
             printf("[x] Error in reading employees.\n");
             return STATUS_ERROR;
         }
  
-        employees = realloc(employees, headerOut->count);
-        if (employees == NULL) {
-            perror("realloc");
-            return STATUS_ERROR;
-        }
-
-        if (add_employee(headerOut, employees, addstring) == STATUS_ERROR) {
+        if (add_employee(headerOut, &employees, addstring) == STATUS_ERROR) {
             printf("[x] Error adding employee.\n");
             return STATUS_ERROR;
         }
