@@ -1,6 +1,8 @@
 #include <getopt.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
 #include "common.h"
 #include "file.h"
@@ -11,6 +13,8 @@ void print_usage(
 ) {
     printf("Usage:\n\t%s\n", argv[0]);
     printf("\t-n: (optional) create new db file\n");
+    printf("\t-r: (optional) read db file\n");
+    printf("\t-a: (optional) add a csv like string in db\n");
     printf("\t-f: (mandatory) path to the db file\n");
 }
 
@@ -19,16 +23,20 @@ int main(
     char* argv[]
 ) {
     int c;
+    int fd = -1;
     bool new_file = false;
+    bool readdb = false;
     char* filepath = NULL;
+    char* addstring = NULL;
     struct dbheader_t* headerOut = NULL;
+    struct employee_t* employees = NULL;
 
     if (argc < 2) {
         print_usage(argv);
-        return -1;
+        return STATUS_ERROR;
     }
 
-    while ((c = getopt(argc, argv, "nf:")) != -1) {
+    while ((c = getopt(argc, argv, "nf:a:r")) != -1) {
         switch (c) {
         case 'n':
             new_file = true;
@@ -36,49 +44,83 @@ int main(
         case 'f':
             filepath = optarg;
             break;
+        case 'a':
+            addstring = optarg;
+            break;
+        case 'r':
+            readdb = true;
+            break;
         case '?':
-            printf("Unknown option -%c\n", c);
+            printf("[x] Unknown option -%c\n", c);
         default:
             print_usage(argv);
-            return -1;
+            return STATUS_ERROR;
         }
     }
 
     if (filepath == NULL) {
-        printf("-f argument is mandatory.\n");
-        return -1;
+        printf("[x] -f argument is mandatory.\n");
+        return STATUS_ERROR;
     }
 
     if (new_file == true) {
-        int fd = create_db_file(filepath);
+        fd = create_db_file(filepath);
         if (fd == STATUS_ERROR) {
-            printf("Unable to create db file.\n");
+            printf("[x] Unable to create db file.\n");
             return STATUS_ERROR;
         }
-        printf("Created new file with fd %d.\n", fd);
         if (create_db_header(&headerOut) == STATUS_ERROR) {
             printf("[x] Unable to create db header.\n");
             return STATUS_ERROR;
         }
 
-        struct employee_t* employee = NULL;
-        output_file(fd, headerOut, employee);
-
-        close(fd);
+        output_file(fd, headerOut, employees);
 
     } else {
-        int fd = open_db_file(filepath);
+        fd = open_db_file(filepath);
         if (fd == STATUS_ERROR) {
             printf("[x] Unable to open db file.\n");
             return STATUS_ERROR;
         }
-        printf("Opened new file with fd %d.\n", fd);
         if (validate_db_header(fd, &headerOut) == STATUS_ERROR) {
             printf("[x] Unable to validate db header.\n");
             return STATUS_ERROR;
         }
-        close(fd);
     }
 
-    return 0;
+    if (addstring) {
+        headerOut->count++;
+        employees = realloc(employees, headerOut->count);
+        if (employees == NULL) {
+            perror("realloc");
+            return STATUS_ERROR;
+        }
+        if (add_employee(headerOut, employees, addstring) == STATUS_ERROR) {
+            printf("[x] Error adding employee.\n");
+            return STATUS_ERROR;
+        }
+
+        if (write(fd, employees, sizeof(employees)) == STATUS_ERROR) {
+            perror("write");
+            return STATUS_ERROR;
+        }
+    }
+
+    if (readdb) {
+        if (read_employees(fd, headerOut, &employees) == STATUS_ERROR) {
+            printf("[x] Error in reading employees.\n");
+            return STATUS_ERROR;
+        }
+        printf("\nList of employees:\n");
+        for (int i = 0; i< headerOut->count; i++){
+           printf("\tName: %s, Address: %s, Hours: %d", employees[i].name, employees[i].address, employees[i].hours);
+        } 
+
+    }
+
+
+
+    close(fd);
+
+    return STATUS_SUCCESS;
 }

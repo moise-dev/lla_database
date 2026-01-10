@@ -30,7 +30,7 @@ int create_db_file(
 int open_db_file(
     char* filename
 ) {
-    int fd = open(filename, O_RDONLY, PERMS_644);
+    int fd = open(filename, O_RDWR, PERMS_644);
     if (fd == -1) {
         perror("open");
         return STATUS_ERROR;

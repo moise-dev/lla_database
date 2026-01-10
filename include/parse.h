@@ -14,7 +14,6 @@ struct dbheader_t {
 struct employee_t {
     char name[NAME_LEN];
     char address[ADDRESS_LEN];
-
     unsigned int hours;
 };
 
@@ -22,8 +21,9 @@ int create_db_header(struct dbheader_t** headerOut);
 int validate_db_header(int fd, struct dbheader_t** headerOut);
 int read_employees(
     int fd,
-    struct dbheader_t*,
+    struct dbheader_t* dbhdr,
     struct employee_t** employeesOut
 );
+int add_employee(struct dbheader_t* dbhdr, struct employee_t* employee, char *addstring);
 int output_file(int fd, struct dbheader_t*, struct employee_t* employees);
 #endif

@@ -5,6 +5,49 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <string.h>
+
+int add_employee(
+    struct dbheader_t* dbhdr,
+    struct employee_t* employees,
+    char* addstring
+) {
+    int i = dbhdr->count-1;
+    char* name = strtok(addstring, ",");
+    char* address = strtok(NULL, ",");
+    char* hours = strtok(NULL, ",");
+
+    strncpy(employees[i].name, name, strlen(name));
+    strncpy(employees[i].address, address, strlen(address));
+    
+    employees[i].hours = atoi(hours);
+
+
+    return STATUS_SUCCESS;
+}
+
+int read_employees(
+    int fd,
+    struct dbheader_t* dbheadr,
+    struct employee_t** employeesOut
+) {
+
+    unsigned short count = dbheadr->count;
+    struct employee_t* employees = calloc(count, sizeof(struct employee_t));
+    if (employees == NULL) {
+        perror("calloc");
+        return STATUS_ERROR;
+    }
+
+    read(fd, employees, count * sizeof(struct employee_t));
+
+    for (int i = 0; i < count; i++) {
+        employees[i].hours = ntohs(employees[i].hours);
+    }
+
+    *employeesOut = employees;
+    return STATUS_SUCCESS;
+}
 
 int output_file(
     int fd,
@@ -35,6 +78,7 @@ int create_db_header(
     }
 
     header->magic = HEADER_MAGIC;
+
     header->version = 0x1;
     header->count = 0;
     header->filesize = sizeof(struct dbheader_t);
