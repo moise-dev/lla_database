@@ -7,6 +7,26 @@
 #include <unistd.h>
 #include <string.h>
 
+void list_employees(
+    int fd,
+    struct dbheader_t* headerOut,
+    struct employee_t* employees
+) {
+    if (read_employees(fd, headerOut, &employees) == STATUS_ERROR) {
+        printf("[x] Error in reading employees.\n");
+        return;
+    }
+    printf("\nList of employees:\n");
+    for (int i = 0; i < headerOut->count; i++) {
+        printf(
+            "\tName: %s, Address: %s, Hours: %d\n",
+            employees[i].name,
+            employees[i].address,
+            employees[i].hours
+        );
+    }
+}
+
 int add_employee(
     struct dbheader_t* dbhdr,
     struct employee_t** employees,
@@ -33,10 +53,8 @@ int add_employee(
         return STATUS_ERROR;
     }
 
-
-
-    struct employee_t *e = *employees;
-    e = realloc(e, sizeof(struct employee_t) * dbhdr->count+1);
+    struct employee_t* e = *employees;
+    e = realloc(e, sizeof(struct employee_t) * dbhdr->count + 1);
     if (e == NULL) {
         perror("realloc");
         return STATUS_ERROR;
@@ -44,8 +62,8 @@ int add_employee(
 
     dbhdr->count++;
     int i = dbhdr->count - 1;
-    strncpy(e[i].name, name, sizeof(e[i].name)-1);
-    strncpy(e[i].address, address, sizeof(e[i].address)-1);
+    strncpy(e[i].name, name, sizeof(e[i].name) - 1);
+    strncpy(e[i].address, address, sizeof(e[i].address) - 1);
 
     e[i].hours = atoi(hours);
 

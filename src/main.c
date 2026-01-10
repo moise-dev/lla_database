@@ -13,7 +13,7 @@ void print_usage(
 ) {
     printf("Usage:\n\t%s\n", argv[0]);
     printf("\t-n: (optional) create new db file\n");
-    printf("\t-r: (optional) read db file\n");
+    printf("\t-l: (optional) list db file\n");
     printf("\t-a: (optional) add a csv like string in db\n");
     printf("\t-f: (mandatory) path to the db file\n");
 }
@@ -25,7 +25,7 @@ int main(
     int c;
     int fd = -1;
     bool new_file = false;
-    bool readdb = false;
+    bool listdb = false;
     char* filepath = NULL;
     char* addstring = NULL;
     struct dbheader_t* headerOut = NULL;
@@ -36,7 +36,7 @@ int main(
         return STATUS_ERROR;
     }
 
-    while ((c = getopt(argc, argv, "nf:a:r")) != -1) {
+    while ((c = getopt(argc, argv, "nf:a:l")) != -1) {
         switch (c) {
         case 'n':
             new_file = true;
@@ -47,8 +47,8 @@ int main(
         case 'a':
             addstring = optarg;
             break;
-        case 'r':
-            readdb = true;
+        case 'l':
+            listdb = true;
             break;
         case '?':
             printf("[x] Unknown option -%c\n", c);
@@ -93,29 +93,17 @@ int main(
             printf("[x] Error in reading employees.\n");
             return STATUS_ERROR;
         }
- 
+
         if (add_employee(headerOut, &employees, addstring) == STATUS_ERROR) {
             printf("[x] Error adding employee.\n");
             return STATUS_ERROR;
         }
-       
+
         output_file(fd, headerOut, employees);
     }
 
-    if (readdb) {
-        if (read_employees(fd, headerOut, &employees) == STATUS_ERROR) {
-            printf("[x] Error in reading employees.\n");
-            return STATUS_ERROR;
-        }
-        printf("\nList of employees:\n");
-        for (int i = 0; i < headerOut->count; i++) {
-            printf(
-                "\tName: %s, Address: %s, Hours: %d\n",
-                employees[i].name,
-                employees[i].address,
-                employees[i].hours
-            );
-        }
+    if (listdb) {
+        list_employees(fd, headerOut, employees);
     }
 
     close(fd);
