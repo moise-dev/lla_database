@@ -99,10 +99,13 @@ int main(
     }
 
     if (listdb) {
-        list_employees(fd, headerOut, employees);
+        list_employees(headerOut, employees);
     }
 
     output_file(fd, headerOut, employees);
+
+    free(employees);
+    free(headerOut);
 
     return STATUS_SUCCESS;
 }

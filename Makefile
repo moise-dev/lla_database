@@ -1,3 +1,7 @@
+CC = gcc
+CFLAGS = -g -O1 -fsanitize=address -fno-omit-frame-pointer -Iinclude
+LDFLAGS = -fsanitize=address
+
 TARGET = bin/dbview
 SRC = $(wildcard src/*.c)
 OBJ = $(patsubst src/%.c, obj/%.o, $(SRC))
@@ -10,7 +14,6 @@ run: clean default
 	./$(TARGET) -f ./mynewdb.db -l
 	./$(TARGET) -f ./mynewdb.db -a "asdf,asdf,2" -l
 
-
 default: $(TARGET)
 
 clean:
@@ -19,8 +22,8 @@ clean:
 	rm -f *.db
 
 $(TARGET): $(OBJ)
-	gcc -o $@ $?
+	$(CC) $(OBJ) -o $@ $(LDFLAGS)
 
 obj/%.o: src/%.c
-	gcc -c $< -o $@ -Iinclude
+	$(CC) $(CFLAGS) -c $< -o $@
 

@@ -49,16 +49,17 @@ int add_employee(
     }
 
     struct employee_t* e = *employees;
-    e = realloc(e, sizeof(struct employee_t) * dbhdr->count + 1);
+    int i = dbhdr->count;
+    dbhdr->count++;
+
+    e = realloc(e, sizeof(struct employee_t) * dbhdr->count);
     if (e == NULL) {
         perror("realloc");
         return STATUS_ERROR;
     }
 
-    dbhdr->count++;
-    int i = dbhdr->count - 1;
-    strncpy(e[i].name, name, sizeof(e[i].name) - 1);
-    strncpy(e[i].address, address, sizeof(e[i].address) - 1);
+    strncpy(e[i].name, name, sizeof(name));
+    strncpy(e[i].address, address, sizeof(address));
 
     e[i].hours = atoi(hours);
 
@@ -170,12 +171,10 @@ int validate_db_header(
             HEADER_MAGIC,
             header->magic
         );
-        free(header);
         return STATUS_ERROR;
     }
     if (header->version != 1) {
         printf("[x] Invalid version. Received %d\n", header->version);
-        free(header);
         return STATUS_ERROR;
     }
 
@@ -183,13 +182,11 @@ int validate_db_header(
     int err = fstat(fd, &size);
     if (err == -1) {
         perror("fstat");
-        free(header);
         return STATUS_ERROR;
     }
 
     if (header->filesize != size.st_size) {
         printf("[x] Invalid size. Received %d\n", header->filesize);
-        free(header);
         return STATUS_ERROR;
     }
 
