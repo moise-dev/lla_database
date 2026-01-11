@@ -12,7 +12,7 @@ void list_employees(
     struct employee_t* employees
 ) {
     for (int i = 0; i < headerOut->count; i++) {
-        printf("Employee %d\n", i);
+        printf("Employee %d\n", i + 1);
         printf("\tName: %s\n", employees[i].name);
         printf("\tAddress: %s\n", employees[i].address);
         printf("\tHours: %d\n", employees[i].hours);
