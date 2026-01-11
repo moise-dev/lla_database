@@ -11,8 +11,11 @@ void list_employees(
     struct dbheader_t* headerOut,
     struct employee_t* employees
 ) {
+    if (headerOut == NULL) {
+        return;
+    }
     for (int i = 0; i < headerOut->count; i++) {
-        printf("Employee %d\n", i + 1);
+        printf("Employee %d\n", i);
         printf("\tName: %s\n", employees[i].name);
         printf("\tAddress: %s\n", employees[i].address);
         printf("\tHours: %d\n", employees[i].hours);
@@ -55,8 +58,8 @@ int add_employee(
         return STATUS_ERROR;
     }
 
-    strncpy(e[i].name, name, sizeof(name));
-    strncpy(e[i].address, address, sizeof(address));
+    strncpy(e[i].name, name, sizeof(e[i].name) + 1);
+    strncpy(e[i].address, address, sizeof(e[i].address) + 1);
 
     e[i].hours = atoi(hours);
 
