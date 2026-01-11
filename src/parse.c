@@ -11,14 +11,11 @@ void list_employees(
     struct dbheader_t* headerOut,
     struct employee_t* employees
 ) {
-    printf("\nList of employees:\n");
     for (int i = 0; i < headerOut->count; i++) {
-        printf(
-            "\tName: %s, Address: %s, Hours: %d\n",
-            employees[i].name,
-            employees[i].address,
-            employees[i].hours
-        );
+        printf("Employee %d\n", i);
+        printf("\tName: %s\n", employees[i].name);
+        printf("\tAddress: %s\n", employees[i].address);
+        printf("\tHours: %d\n", employees[i].hours);
     }
 }
 
